@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout(~{::content})}">
+<body>
+<div th:fragment="content">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Pedido #<span th:text="${pedido.id}"></span></h2>
+        <a th:href="@{/pedidos}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Voltar
+        </a>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">Cliente</h6>
+                    <p class="card-text fw-bold" th:text="${pedido.cliente.nome}"></p>
+                    <p class="card-text text-muted small" th:text="${pedido.cliente.telefone}"></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">Informações do Pedido</h6>
+                    <p class="mb-1">
+                        <strong>Data:</strong>
+                        <span th:text="${#temporals.format(pedido.dataPedido, 'dd/MM/yyyy HH:mm')}"></span>
+                    </p>
+                    <p class="mb-1">
+                        <strong>Status:</strong>
+                        <span class="badge"
+                              th:classappend="${pedido.status.name() == 'PENDENTE'} ? 'bg-warning text-dark' :
+                                             (${pedido.status.name() == 'CONFIRMADO'} ? 'bg-success' :
+                                             (${pedido.status.name() == 'CANCELADO'} ? 'bg-danger' : 'bg-info text-dark'))"
+                              th:text="${pedido.status}"></span>
+                    </p>
+                    <p class="mb-0">
+                        <strong>Total:</strong>
+                        R$ <span th:text="${#numbers.formatDecimal(pedido.total, 1, 'POINT', 2, 'COMMA')}"></span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h5>Itens</h5>
+    <div class="table-responsive mb-4">
+        <table class="table table-bordered align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Produto</th>
+                    <th class="text-center">Quantidade</th>
+                    <th class="text-end">Preço Unit. (R$)</th>
+                    <th class="text-end">Subtotal (R$)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="item : ${pedido.itens}">
+                    <td th:text="${item.produto.nome}"></td>
+                    <td class="text-center" th:text="${item.quantidade}"></td>
+                    <td class="text-end" th:text="${#numbers.formatDecimal(item.precoUnitario, 1, 'POINT', 2, 'COMMA')}"></td>
+                    <td class="text-end"
+                        th:text="${#numbers.formatDecimal(item.precoUnitario.multiply(T(java.math.BigDecimal).valueOf(item.quantidade)), 1, 'POINT', 2, 'COMMA')}">
+                    </td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr class="table-secondary fw-bold">
+                    <td colspan="3" class="text-end">Total</td>
+                    <td class="text-end">
+                        R$ <span th:text="${#numbers.formatDecimal(pedido.total, 1, 'POINT', 2, 'COMMA')}"></span>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <div class="card" style="max-width:350px">
+        <div class="card-body">
+            <h6 class="card-title">Atualizar Status</h6>
+            <form th:action="@{/pedidos/{id}/status(id=${pedido.id})}" method="post" class="d-flex gap-2">
+                <select class="form-select" name="status">
+                    <option th:each="s : ${statuses}"
+                            th:value="${s}"
+                            th:text="${s}"
+                            th:selected="${s == pedido.status}"></option>
+                </select>
+                <button type="submit" class="btn btn-primary text-nowrap">
+                    <i class="bi bi-arrow-repeat"></i> Atualizar
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

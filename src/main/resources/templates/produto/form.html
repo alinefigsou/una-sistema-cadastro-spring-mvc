@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout(~{::content})}">
+<body>
+<div th:fragment="content">
+    <h2 th:text="${editMode} ? 'Editar Produto' : 'Novo Produto'">Produto</h2>
+
+    <form th:action="${editMode} ? @{/produtos/{id}/editar(id=${produto.id})} : @{/produtos/novo}"
+          th:object="${produto}" method="post" class="row g-3 mt-2" style="max-width:600px">
+
+        <div class="col-12">
+            <label class="form-label">Nome *</label>
+            <input type="text" class="form-control" th:field="*{nome}"
+                   th:classappend="${#fields.hasErrors('nome')} ? ' is-invalid'"/>
+            <div class="invalid-feedback" th:errors="*{nome}"></div>
+        </div>
+
+        <div class="col-12">
+            <label class="form-label">Descrição</label>
+            <textarea class="form-control" th:field="*{descricao}" rows="3"></textarea>
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label">Preço (R$) *</label>
+            <input type="number" step="0.01" min="0.01" class="form-control" th:field="*{preco}"
+                   th:classappend="${#fields.hasErrors('preco')} ? ' is-invalid'"/>
+            <div class="invalid-feedback" th:errors="*{preco}"></div>
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label">Estoque *</label>
+            <input type="number" min="0" class="form-control" th:field="*{estoque}"
+                   th:classappend="${#fields.hasErrors('estoque')} ? ' is-invalid'"/>
+            <div class="invalid-feedback" th:errors="*{estoque}"></div>
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label">Categoria</label>
+            <select class="form-select" th:field="*{categoria}">
+                <option value="">Selecione...</option>
+                <option th:each="cat : ${categorias}" th:value="${cat}" th:text="${cat}"></option>
+            </select>
+        </div>
+
+        <div class="col-md-6 d-flex align-items-end">
+            <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" th:field="*{ativo}" id="ativo"/>
+                <label class="form-check-label" for="ativo">Ativo</label>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <button type="submit" class="btn btn-success">
+                <i class="bi bi-check-lg"></i> Salvar
+            </button>
+            <a th:href="@{/produtos}" class="btn btn-secondary ms-2">Cancelar</a>
+        </div>
+    </form>
+</div>
+</body>
+</html>

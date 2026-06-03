@@ -1,0 +1,18 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: cadastro_postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-cadastro_db}
+      POSTGRES_USER: ${POSTGRES_USER:-cadastro_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cadastro_pass}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
